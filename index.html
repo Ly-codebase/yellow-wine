@@ -569,6 +569,33 @@
 
     <!-- 添加一个简单的JavaScript -->
     <script>
+		document.addEventListener('DOMContentLoaded', function() {
+		    // 记录是否是首次加载
+		    let isFirstLoad = true;
+		    
+		    // 拦截所有hash跳转
+		    window.addEventListener('hashchange', function(e) {
+		        if (isFirstLoad) {
+		            // 首次加载时，如果hash不是#home，强制改为#home
+		            if (window.location.hash !== '#home') {
+		                e.preventDefault();
+		                window.location.hash = '#home';
+		                isFirstLoad = false;
+		            }
+		        }
+		    });
+		    
+		    // 页面加载完成后，检查并设置正确的hash
+		    window.addEventListener('load', function() {
+		        if (window.location.hash !== '#home') {
+		            // 延迟一点时间，确保DOM完全加载
+		            setTimeout(() => {
+		                window.location.hash = '#home';
+		                isFirstLoad = false;
+		            }, 100);
+		        }
+		    });
+		});
         // 返回顶部按钮
         const backToTop = document.getElementById('backToTop');
         
@@ -898,3 +925,4 @@
     </div>
 </body>
 </html>
+
