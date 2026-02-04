@@ -591,250 +591,275 @@
                 this.classList.add('active');
             });
         });
-    // 品牌故事交互功能
-    document.addEventListener('DOMContentLoaded', function() {
-        const storyLinks = document.querySelectorAll('.story-link');
-        const storyDetails = document.querySelectorAll('.story-detail');
+	    // 品牌故事交互功能
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const storyLinks = document.querySelectorAll('.story-link');
+	        const storyDetails = document.querySelectorAll('.story-detail');
+	        
+	        // 显示对应故事的函数
+	        function showStory(storyId) {
+	            // 移除所有卡片的active状态
+	            storyLinks.forEach(link => {
+	                link.classList.remove('active');
+	            });
+	            
+	            // 隐藏所有故事
+	            storyDetails.forEach(detail => {
+	                detail.classList.remove('active');
+	                detail.style.display = 'none';
+	            });
+	            
+	            // 显示选中的故事
+	            const selectedStory = document.getElementById(storyId);
+	            if (selectedStory) {
+	                selectedStory.classList.add('active');
+	                selectedStory.style.display = 'grid';
+	            }
+	            
+	            // 添加对应卡片的active状态
+	            const correspondingLink = document.querySelector(`.story-link[href="#${storyId}"]`);
+	            if (correspondingLink) {
+	                correspondingLink.classList.add('active');
+	            }
+	            
+	            // 更新URL hash
+	            window.location.hash = storyId;
+	        }
         
-        // 显示对应故事的函数
-        function showStory(storyId) {
-            // 移除所有卡片的active状态
-            storyLinks.forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // 隐藏所有故事
-            storyDetails.forEach(detail => {
-                detail.classList.remove('active');
-                detail.style.display = 'none';
-            });
-            
-            // 显示选中的故事
-            const selectedStory = document.getElementById(storyId);
-            if (selectedStory) {
-                selectedStory.classList.add('active');
-                selectedStory.style.display = 'grid';
-            }
-            
-            // 添加对应卡片的active状态
-            const correspondingLink = document.querySelector(`.story-link[href="#${storyId}"]`);
-            if (correspondingLink) {
-                correspondingLink.classList.add('active');
-            }
-            
-            // 更新URL hash
-            window.location.hash = storyId;
-        }
+	        // 为每个卡片添加点击事件
+	        storyLinks.forEach(link => {
+	            link.addEventListener('click', function(e) {
+	                e.preventDefault();
+	                const storyId = this.getAttribute('href').substring(1);
+	                
+	                showStory(storyId);
+	                
+	                // 平滑滚动到故事详情区域
+	                document.getElementById('story-details').scrollIntoView({
+	                    behavior: 'smooth',
+	                    block: 'start'
+	                });
+	            });
+	        });
         
-        // 为每个卡片添加点击事件
-        storyLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const storyId = this.getAttribute('href').substring(1);
-                
-                showStory(storyId);
-                
-                // 平滑滚动到故事详情区域
-                document.getElementById('story-details').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            });
-        });
+	        // 检查URL hash并显示对应故事
+	        function checkHashOnLoad() {
+	            const hash = window.location.hash;
+	            if (hash) {
+	                const storyId = hash.substring(1);
+	                const storyElement = document.getElementById(storyId);
+	                if (storyElement && storyElement.classList.contains('story-detail')) {
+	                    showStory(storyId);
+	                }
+	            } else {
+	                // 默认显示第一个卡片为激活状态
+	                const firstLink = document.querySelector('.story-link');
+	                if (firstLink) {
+	                    const storyId = firstLink.getAttribute('href').substring(1);
+	                    showStory(storyId);
+	                }
+	            }
+	        }
         
-        // 检查URL hash并显示对应故事
-        function checkHashOnLoad() {
-            const hash = window.location.hash;
-            if (hash) {
-                const storyId = hash.substring(1);
-                const storyElement = document.getElementById(storyId);
-                if (storyElement && storyElement.classList.contains('story-detail')) {
-                    showStory(storyId);
-                }
-            } else {
-                // 默认显示第一个卡片为激活状态
-                const firstLink = document.querySelector('.story-link');
-                if (firstLink) {
-                    const storyId = firstLink.getAttribute('href').substring(1);
-                    showStory(storyId);
-                }
-            }
-        }
+	        // 页面加载时检查hash
+	        checkHashOnLoad();
         
-        // 页面加载时检查hash
-        checkHashOnLoad();
+	        // 监听hash变化
+	        window.addEventListener('hashchange', checkHashOnLoad);
         
-        // 监听hash变化
-        window.addEventListener('hashchange', checkHashOnLoad);
-        
-        // 卡片悬停效果增强
-        storyLinks.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                // 如果是非激活状态的卡片，添加悬停样式
-                if (!this.classList.contains('active')) {
-                    const themeClass = Array.from(this.classList).find(cls => 
-                        cls.startsWith('card-theme-')
-                    );
-                    
-                    // 临时添加悬停背景色
-                    this.style.transform = 'translateY(-15px)';
-                    this.style.boxShadow = 'var(--shadow-medium)';
-                    
-                    // 根据主题添加悬停色
-                    if (themeClass === 'card-theme-gold') {
-                        this.style.backgroundColor = 'rgba(255, 215, 0, 0.1)';
-                        this.style.borderColor = 'var(--gold-light)';
-                    } else if (themeClass === 'card-theme-wine') {
-                        this.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
-                        this.style.borderColor = 'var(--wine-light)';
-                    } else if (themeClass === 'card-theme-green') {
-                        this.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-                        this.style.borderColor = '#34D399';
-                    } else if (themeClass === 'card-theme-orange') {
-                        this.style.backgroundColor = 'rgba(249, 115, 22, 0.1)';
-                        this.style.borderColor = '#FB923C';
-                    }
-                }
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                // 如果是非激活状态的卡片，恢复原样
-                if (!this.classList.contains('active')) {
-                    this.style.transform = '';
-                    this.style.boxShadow = '';
-                    this.style.backgroundColor = '';
-                    this.style.borderColor = '';
-                }
-            });
-        });
-    });
+	        // 卡片悬停效果增强
+	        storyLinks.forEach(card => {
+	            card.addEventListener('mouseenter', function() {
+	                // 如果是非激活状态的卡片，添加悬停样式
+	                if (!this.classList.contains('active')) {
+	                    const themeClass = Array.from(this.classList).find(cls => 
+	                        cls.startsWith('card-theme-')
+	                    );
+	                    
+	                    // 临时添加悬停背景色
+	                    this.style.transform = 'translateY(-15px)';
+	                    this.style.boxShadow = 'var(--shadow-medium)';
+	                    
+	                    // 根据主题添加悬停色
+	                    if (themeClass === 'card-theme-gold') {
+	                        this.style.backgroundColor = 'rgba(255, 215, 0, 0.1)';
+	                        this.style.borderColor = 'var(--gold-light)';
+	                    } else if (themeClass === 'card-theme-wine') {
+	                        this.style.backgroundColor = 'rgba(139, 0, 0, 0.1)';
+	                        this.style.borderColor = 'var(--wine-light)';
+	                    } else if (themeClass === 'card-theme-green') {
+	                        this.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+	                        this.style.borderColor = '#34D399';
+	                    } else if (themeClass === 'card-theme-orange') {
+	                        this.style.backgroundColor = 'rgba(249, 115, 22, 0.1)';
+	                        this.style.borderColor = '#FB923C';
+	                    }
+	                }
+	            });
+	            
+	            card.addEventListener('mouseleave', function() {
+	                // 如果是非激活状态的卡片，恢复原样
+	                if (!this.classList.contains('active')) {
+	                    this.style.transform = '';
+	                    this.style.boxShadow = '';
+	                    this.style.backgroundColor = '';
+	                    this.style.borderColor = '';
+	                }
+	            });
+	        });
+	    });
 
 
-    // 对话机器人功能
-    document.addEventListener('DOMContentLoaded', function() {
-        const chatbotAvatar = document.getElementById('chatbot-avatar');
-        const chatbotModal = document.getElementById('chatbot-modal');
-        const modalCloseButtons = document.querySelectorAll('.modal-close');
-        const confirmChatBtn = document.getElementById('confirm-chat');
-        
-        // 对话页面URL
-        const chatPageUrl = 'chat.html'; // 或者 '/chat'，根据你的实际路由
-        
-        // 点击机器人图标打开模态框
-        chatbotAvatar.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // 先添加点击动画
-            this.style.transform = 'scale(0.9)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 200);
-            
-            // 显示模态框
-            chatbotModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // 防止背景滚动
-        });
-        
-        // 关闭模态框
-        modalCloseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                chatbotModal.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-        
-        // 点击模态框外部关闭
-        chatbotModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // 确认跳转到对话页面
-        confirmChatBtn.addEventListener('click', function() {
-            // 可以在这里添加跳转前的逻辑，比如记录点击事件等
-            console.log('跳转到对话页面');
-            
-            // 关闭模态框
-            chatbotModal.classList.remove('active');
-            document.body.style.overflow = '';
-            
-            // 跳转到对话页面
-            window.location.href = chatPageUrl;
-            
-            // 如果是单页应用，可以使用：
-            // window.location.hash = '#chat';
-            // 或者使用路由：
-            // router.navigate('/chat');
-        });
-        
-        // 机器人呼吸动画控制（避免与其他动画冲突）
-        let isBreathing = true;
-        
-        // 滚动时暂停呼吸动画
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset;
-            
-            if (scrollTop > 100) {
-                if (isBreathing) {
-                    chatbotAvatar.style.animationPlayState = 'paused';
-                    isBreathing = false;
-                }
-            } else {
-                if (!isBreathing) {
-                    chatbotAvatar.style.animationPlayState = 'running';
-                    isBreathing = true;
-                }
-            }
-        });
-        
-        // 键盘快捷键支持（ESC关闭模态框）
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && chatbotModal.classList.contains('active')) {
-                chatbotModal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-            
-            // 快捷键 Ctrl+Alt+C 快速打开机器人对话
-            if (e.ctrlKey && e.altKey && e.key === 'c') {
-                e.preventDefault();
-                chatbotAvatar.click();
-            }
-        });
-        
-        // 模拟新消息提示（可以根据实际情况触发）
-        function showNewMessageIndicator() {
-            chatbotAvatar.classList.add('has-new');
-            
-            // 3秒后自动消失
-            setTimeout(() => {
-                chatbotAvatar.classList.remove('has-new');
-            }, 3000);
-        }
-        
-        // 可选：页面加载一段时间后显示新消息提示
-        setTimeout(() => {
-            // 随机显示新消息提示，增加互动性
-            if (Math.random() > 0.7) {
-                showNewMessageIndicator();
-            }
-        }, 5000);
-        
-        // 可选：机器人说话动画
-        function makeRobotTalk(duration = 1000) {
-            chatbotAvatar.classList.add('talking');
-            setTimeout(() => {
-                chatbotAvatar.classList.remove('talking');
-            }, duration);
-        }
-        
-        // 页面加载时机器人打个招呼
-        setTimeout(() => {
-            makeRobotTalk(800);
-        }, 1500);
-    });
+	    // 对话机器人功能
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const chatbotAvatar = document.getElementById('chatbot-avatar');
+	        const chatbotModal = document.getElementById('chatbot-modal');
+	        const modalCloseButtons = document.querySelectorAll('.modal-close');
+	        const confirmChatBtn = document.getElementById('confirm-chat');
+	        
+	        // 对话页面URL
+	        const chatPageUrl = 'chat.html'; // 或者 '/chat'，根据你的实际路由
+	        
+	        // 点击机器人图标打开模态框
+	        chatbotAvatar.addEventListener('click', function(e) {
+	            e.preventDefault();
+	            e.stopPropagation();
+	            
+	            // 先添加点击动画
+	            this.style.transform = 'scale(0.9)';
+	            setTimeout(() => {
+	                this.style.transform = '';
+	            }, 200);
+	            
+	            // 显示模态框
+	            chatbotModal.classList.add('active');
+	            document.body.style.overflow = 'hidden'; // 防止背景滚动
+	        });
+	        
+	        // 关闭模态框
+	        modalCloseButtons.forEach(button => {
+	            button.addEventListener('click', function() {
+	                chatbotModal.classList.remove('active');
+	                document.body.style.overflow = '';
+	            });
+	        });
+	        
+	        // 点击模态框外部关闭
+	        chatbotModal.addEventListener('click', function(e) {
+	            if (e.target === this) {
+	                this.classList.remove('active');
+	                document.body.style.overflow = '';
+	            }
+	        });
+	        
+	        // 确认跳转到对话页面
+	        confirmChatBtn.addEventListener('click', function() {
+	            // 可以在这里添加跳转前的逻辑，比如记录点击事件等
+	            console.log('跳转到对话页面');
+	            
+	            // 关闭模态框
+	            chatbotModal.classList.remove('active');
+	            document.body.style.overflow = '';
+	            
+	            // 跳转到对话页面
+	            window.location.href = chatPageUrl;
+	            
+	            // 如果是单页应用，可以使用：
+	            // window.location.hash = '#chat';
+	            // 或者使用路由：
+	            // router.navigate('/chat');
+	        });
+	        
+	        // 机器人呼吸动画控制（避免与其他动画冲突）
+	        let isBreathing = true;
+	        
+	        // 滚动时暂停呼吸动画
+	        window.addEventListener('scroll', function() {
+	            const scrollTop = window.pageYOffset;
+	            
+	            if (scrollTop > 100) {
+	                if (isBreathing) {
+	                    chatbotAvatar.style.animationPlayState = 'paused';
+	                    isBreathing = false;
+	                }
+	            } else {
+	                if (!isBreathing) {
+	                    chatbotAvatar.style.animationPlayState = 'running';
+	                    isBreathing = true;
+	                }
+	            }
+	        });
+	        
+	        // 键盘快捷键支持（ESC关闭模态框）
+	        document.addEventListener('keydown', function(e) {
+	            if (e.key === 'Escape' && chatbotModal.classList.contains('active')) {
+	                chatbotModal.classList.remove('active');
+	                document.body.style.overflow = '';
+	            }
+	            
+	            // 快捷键 Ctrl+Alt+C 快速打开机器人对话
+	            if (e.ctrlKey && e.altKey && e.key === 'c') {
+	                e.preventDefault();
+	                chatbotAvatar.click();
+	            }
+	        });
+	        
+	        // 模拟新消息提示（可以根据实际情况触发）
+	        function showNewMessageIndicator() {
+	            chatbotAvatar.classList.add('has-new');
+	            
+	            // 3秒后自动消失
+	            setTimeout(() => {
+	                chatbotAvatar.classList.remove('has-new');
+	            }, 3000);
+	        }
+	        
+	        // 可选：页面加载一段时间后显示新消息提示
+	        setTimeout(() => {
+	            // 随机显示新消息提示，增加互动性
+	            if (Math.random() > 0.7) {
+	                showNewMessageIndicator();
+	            }
+	        }, 5000);
+	        
+	        // 可选：机器人说话动画
+	        function makeRobotTalk(duration = 1000) {
+	            chatbotAvatar.classList.add('talking');
+	            setTimeout(() => {
+	                chatbotAvatar.classList.remove('talking');
+	            }, duration);
+	        }
+	        
+	        // 页面加载时机器人打个招呼
+	        setTimeout(() => {
+	            makeRobotTalk(800);
+	        }, 1500);
+	    });
+			// 页面加载时强制显示首页
+		window.addEventListener('load', function() {
+		    // 检查URL，如果是指向品牌故事的hash，允许显示
+		    const hash = window.location.hash;
+		    const storyHashes = ['#source-story', '#time-story', '#nature-story', '#craft-story'];
+		    
+		    // 如果不是指向特定故事的hash，确保显示首页
+		    if (!storyHashes.includes(hash)) {
+		        // 立即滚动到顶部
+		        window.scrollTo(0, 0);
+		        
+		        // 激活首页导航
+		        document.querySelectorAll('.nav-item').forEach(nav => {
+		            nav.classList.remove('active');
+		            if (nav.getAttribute('href') === '#home') {
+		                nav.classList.add('active');
+		            }
+		        });
+		        
+		        // 如果URL中没有hash，设置为#home
+		        if (!hash) {
+		            window.history.replaceState(null, null, '#home');
+		        }
+		    }
+		});
     </script>
     <!-- 对话机器人浮动图标 -->
     <div id="chatbot-avatar" class="chatbot-avatar">
@@ -872,4 +897,5 @@
         </div>
     </div>
 </body>
+
 </html>
